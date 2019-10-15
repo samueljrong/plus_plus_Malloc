@@ -1,12 +1,13 @@
 #include<stdio.h>
 #include "mymalloc.h"
 
-//size of metablock is 4 
-struct metablock
+//size of metablock is 2, tested in iLab
+typedef struct _metablock
 {
     unsigned int size:12;
     unsigned int free:1;
-};
+    unsigned int magicNum:3;
+}__attribute__((packed, aligned(1))) metablock; // this prevents structure padding
 
 void* mymalloc(int memory, int linenum, char* filename){
     //check the free memory address
