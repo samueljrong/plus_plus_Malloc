@@ -1,14 +1,12 @@
 #include <stdio.h>
 #include "mymalloc.h"
-// #define MAGIC 7
 
 //size of metablock is 2, tested in iLab
 typedef struct _metablock
-{
+{ 
     unsigned int size:12;  //do we need to declare our function in header file first ? yeah that'll be best practice i think, but not necessary
     unsigned int free:1;
-    // unsigned int magicNum:3;
-}__attribute__((packed, aligned(1))) metablock; // this prevents structure padding
+}__attribute__((packed, aligned(1))) metablock; // prevents structure padding that makes this 4 bytes
 
 void initialize(){   //create a empty mteablock
     start->size = 4096-sizeof(metablock);
@@ -18,6 +16,9 @@ void initialize(){   //create a empty mteablock
 // Combine currentBlock's and next metablock's size if both are free.
 void mergeNext(void* currentBlock) {
     metablock* next = (void*)currentBlock + sizeof(metablock) + curr->size;
+    if (next > (4096 - sizeof(metablock))) {
+        return;
+    }
     if (next->free == 1) {
         (currentBlock->size) += ((next->size) + sizeof(metablock));
         mergeNext(next);
@@ -69,11 +70,6 @@ void* mymalloc(int memory, int linenum, char* filename){
 }
 
 void* myfree(void* givenBlock, int linenum, char* filename){
-    // // Check if given metablock to free is an existing metablock
-    // if ((givenBlock->magicNum) != MAGIC) {
-    //     // Error, not a malloc'ed metablock we provided
-    //     printf("error on line #%d in file %s\n", linenum, filename);
-    // }
 
     //how about we check giveBlock == pointer in array
     // 
@@ -113,18 +109,14 @@ void* myfree(void* givenBlock, int linenum, char* filename){
     // do they? I assumed that there's nothing actually in the char[], only the metadata and our size
     // and that when we free, we just set free = 1. And only when we see two adjacent free metablocks
     // do we actually clean it up and delete the metablock. I think. got it
-    if(prev->free == 1){ // new due date is the 20th lol
-        
+    if(prev->free == 1){
+        (curr->size) += ((prev->size) + sizeof(metablock));
     }
 
     // should we create a merge() function? Like "void merge(void" yep, it may help
     // yeah cause i think it'll just keep finding consecutive free blocks
     // Check if there are free metablocks after curr
     mergeNext(curr);
-    if (((void*)curr + sizeof(metablock) + curr->size)->free == 1) {
-       
-        
-    } 
     
     //sam, how to u merge two free metablock
     // After freeing the 2nd metablock (so set it's free = 1):
