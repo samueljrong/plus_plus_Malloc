@@ -12,8 +12,7 @@ typedef struct _metablock
 void* mymalloc(int memory, int linenum, char* filename){
     //check the free memory address
 
-    
-    struct metablock *newblock = (void *) myblock;
+    metablock *newblock = (void *) myblock;
     if(newblock) //point to NULL(means no allocated memory before)
     {
         newblock->size = memory;
