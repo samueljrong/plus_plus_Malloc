@@ -12,4 +12,8 @@ void* mymalloc(int memory, int linenum, char* filename);
 #define free(x) myfree(x, __LINE__, __FILE__)
 void* myfree(void*, int, char*);
  
+void initialize()
+
+void mergeNext(void*)
+
 #endif
