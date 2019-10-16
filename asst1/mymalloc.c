@@ -96,7 +96,9 @@ void* myfree(void* givenBlock, int linenum, char* filename){
         printf("error on line #%d in file %s\n", linenum, filename);
         return NULL;
     } ///that' great
-
+    
+    //so now it should be case found it 
+    curr -> 
     
 
     
