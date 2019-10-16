@@ -15,6 +15,9 @@ void initialize(){   //create a empty mteablock
     start->free = 1;
 }
 
+void mergeNext(void* currentBlock) {
+    
+}
 
 void* mymalloc(int memory, int linenum, char* filename){
     if (memory > (4096 - sizeof(metablock)) { // Memory too large to fit in array
@@ -98,9 +101,24 @@ void* myfree(void* givenBlock, int linenum, char* filename){
     } ///that' great
     
     //so now it should be case found it 
-    curr -> 
-    
+    curr -> free = 1; 
+    //and do we need to clean up the data? set char[] = /0
+    //since when people allocated, they store their date in the array
+    // do they? I assumed that there's nothing actually in the char[], only the metadata and our size
+    // and that when we free, we just set free = 1. And only when we see two adjacent free metablocks
+    // do we actually clean it up and delete the metablock. I think. got it
+    if(prev->free == 1){
+        
+    }
 
+    // should we create a merge() function? Like "void merge(void" yep, it may help
+    // yeah cause i think it'll just keep finding consecutive free blocks
+    // Check if there are free metablocks after curr
+    mergeNext(curr);
+    if (((void*)curr + sizeof(metablock) + curr->size)->free == 1) {
+       
+        
+    } 
     
     //sam, how to u merge two free metablock
     // After freeing the 2nd metablock (so set it's free = 1):
