@@ -5,7 +5,7 @@
 //size of metablock is 2, tested in iLab
 typedef struct _metablock
 {
-    unsigned int size:12;
+    unsigned int size:12;  //do we need to declare our function in header file first ? yeah that'll be best practice i think, but not necessary
     unsigned int free:1;
     // unsigned int magicNum:3;
 }__attribute__((packed, aligned(1))) metablock; // this prevents structure padding
