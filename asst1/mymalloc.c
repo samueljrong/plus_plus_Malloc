@@ -11,12 +11,18 @@ typedef struct _metablock
 }__attribute__((packed, aligned(1))) metablock; // this prevents structure padding
 
 void initialize(){   //create a empty mteablock
-    start->size = 4096-sizeof(struct metablock);
+    start->size = 4096-sizeof(metablock);
     start->free = 1;
 }
 
+// Combine currentBlock's and next metablock's size if both are free.
 void mergeNext(void* currentBlock) {
-    
+    metablock* next = (void*)currentBlock + sizeof(metablock) + curr->size;
+    if (next->free == 1) {
+        (currentBlock->size) += ((next->size) + sizeof(metablock));
+        mergeNext(next);
+    }
+    return;
 }
 
 void* mymalloc(int memory, int linenum, char* filename){
@@ -107,7 +113,7 @@ void* myfree(void* givenBlock, int linenum, char* filename){
     // do they? I assumed that there's nothing actually in the char[], only the metadata and our size
     // and that when we free, we just set free = 1. And only when we see two adjacent free metablocks
     // do we actually clean it up and delete the metablock. I think. got it
-    if(prev->free == 1){
+    if(prev->free == 1){ // new due date is the 20th lol
         
     }
 
