@@ -4,6 +4,11 @@
 
 int main(int argc, char** argv) {
     // Workload A: malloc() 1 byte and immediately free it - do this 150 times
+    int i;
+    for(i = 0; i < 150; i++){
+        void* ptr = (void*)malloc(1);
+        free(ptr);
+    }
 
     // Workload B: malloc() 1 byte, store the pointer in an array - do this 150 times.
     // Once you've malloc()ed 50 byte chunks, then free() the 50 1 byte pointers one by one.
