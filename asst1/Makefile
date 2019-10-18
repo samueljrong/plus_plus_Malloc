@@ -1,5 +1,5 @@
 all: memgrind.c mymalloc.o 
-	gcc mymgrind.c mymalloc.o 
+	gcc memgrind.c mymalloc.o 
 
 	mymalloc.o: mymalloc.c
 		gcc -c mymalloc.c
