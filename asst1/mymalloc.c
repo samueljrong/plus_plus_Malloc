@@ -28,7 +28,7 @@ void mergeNext(metablock* curr) {
 
 void* mymalloc(int memory, int linenum, char* filename){
     if (memory > (4096 - sizeof(metablock))) { // Memory too large to fit in array
-        printf("error on line #%d in file %s\n", linenum, filename);
+        printf("Error on line #%d in file %s\n\t Asking for too much memory.\n", linenum, filename);
     }
     //i didn't add the case when no enough  space for allocated 
     metablock *ptr1;
@@ -46,7 +46,7 @@ void* mymalloc(int memory, int linenum, char* filename){
             // then return error yep
             if ((void*)ptr1 > ((void*)myblock + sizeof(char)*4095 - sizeof(metablock))) // ptr1 surpassed myblock's memory limit
             {
-                printf("error on line #%d in file %s\n", linenum, filename);
+                printf("Error on line #%d in file %s\n\t No memory large enough to malloc available.\n", linenum, filename);
                 return NULL;  //failed and return 
             }
             
@@ -82,7 +82,7 @@ void* myfree(void* givenBlock, int linenum, char* filename){
     //i don't know how to set up case when we go through the array, but not found it
     // oh i think we'll just add another conditional comparing curr == givenBlock, and then error
     if ((((metablock*)givenBlock)->size) > (4096 - sizeof(metablock))) { // Too big, couldn't have existed
-        printf("error on line #%d in file %s\n", linenum, filename);
+        printf("Error on line #%d in file %s\n\t Trying to free memory that was not allocated by malloc.\n", linenum, filename);
         return NULL;
     }
     
@@ -98,11 +98,15 @@ void* myfree(void* givenBlock, int linenum, char* filename){
         }
     }
     if (curr != givenBlock) { // checked all of myBlock, but givenBlock not found
-        printf("error on line #%d in file %s\n", linenum, filename);
+        printf("Error on line #%d in file %s\n\t Trying to free memory that was not allocated by malloc.\n", linenum, filename);
         return NULL;
     } ///that' great
     
     //so now it should be case found it 
+    if ((curr->free) == 1) { // Error. givenBlock was freed before. Don't free twice.
+        printf("Error on line #%d in file %s\n\t Redundant freeing - pointer was freed before.\n", linenum, filename);
+        return NULL;        
+    }
     curr -> free = 1; 
     //and do we need to clean up the data? set char[] = /0
     //since when people allocated, they store their date in the array
@@ -128,5 +132,4 @@ void* myfree(void* givenBlock, int linenum, char* filename){
 
     //printf("error on line #%d in file %s\n", linenum, filename);
     //return NULL;
-    return givenBlock;
 }
