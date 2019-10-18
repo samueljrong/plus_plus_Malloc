@@ -1,0 +1,14 @@
+#include <stdio.h>
+
+// Memgrind: a series of workloads to test our mymalloc and myfree implementations.
+
+int main(int argc, char** argv) {
+    // Workload A: malloc() 1 byte and immediately free it - do this 150 times
+
+    // Workload B: malloc() 1 byte, store the pointer in an array - do this 150 times.
+    // Once you've malloc()ed 50 byte chunks, then free() the 50 1 byte pointers one by one.
+
+    // Workload C
+
+    return 0;
+}
