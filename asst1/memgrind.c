@@ -1,21 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 // Memgrind: a series of workloads to test our mymalloc and myfree implementations.
 // Each workload will be run 100 times, one after the other.
 
+// NEED TO RECORD RUNTIME OF EACH WORKLOAD AND CREATE MEANs
+
 int main(int argc, char **argv)
 {
+    struct timeval startTime;
+    struct timeval endTime;
+
     // Workload A: malloc() 1 byte and immediately free it - do this 150 times
+
+    long runtimeA = 0L;
     int i, j, k;
     for (i = 0; i < 100; i++)
     {
+        gettimeofday(&startTime, NULL);
         for (j = 0; j < 150; j++)
         {
             void *ptr = (void *)malloc(1);
             free(ptr);
         }
+        gettimeofday(&endTime, NULL);
+        runtimeA += ((endTime.tv_sec - startTime.tv_sec) * 1000000L + endTime.tv_usec - startTime.tv_usec);
     }
+    runtimeA = (runtimeA / 100); // Calculate mean runtime of workload A
 
     // Workload B: malloc() 1 byte, store the pointer in an array - do this 150 times.
     // Once you've malloc()ed 50 byte chunks, then free() the 50 1 byte pointers one by one.
@@ -61,7 +73,10 @@ int main(int argc, char **argv)
                 if (remainingPtrs > 0) // Only free if a pointer exists
                 {
                     remainingPtrs--;
-                    free(ptrArr[remainingPtrs]);
+                    if (ptrArr[remainingPtrs] != NULL)
+                    {
+                        free(ptrArr[remainingPtrs]);
+                    }
                 }
             }
         }
@@ -71,6 +86,10 @@ int main(int argc, char **argv)
             free(ptrArr[remainingPtrs]);
         }
     }
+
+    // ERROR, might be going out of array in this workload. Issue with myfree() or this workload?
+    // double free or corruption (fasttop)
+    // Aborted (core dumped)
 
     // Workload D: Randomly choose between a randomly-sized malloc() or free()ing a pointer – do this many times (see below)
     // Keep track of each malloc so that all mallocs do not exceed your total memory capacity
@@ -87,20 +106,26 @@ int main(int argc, char **argv)
             if ((rand() % 2) == 0) // Malloc between 1 and 64 bytes
             {
                 int randSize = (rand() % 64 + 1);
-                void *ptr = (void *)malloc(randSize);
+
+                void *ptr = malloc(randSize);
                 if (ptr != NULL)
                 { // If NULL, malloc failed, possibly due to exceeding total memory capacity.
                     ptrArr[remainingPtrs];
                     counter++;
                     remainingPtrs++;
+                    printf("Malloc counter %d\n", counter);
                 }
             }
             else // Free a pointer
             {
                 if (remainingPtrs > 0) // Only free if a pointer exists
                 {
+                    printf("Freeing %d\n", remainingPtrs);
                     remainingPtrs--;
-                    free(ptrArr[remainingPtrs]);
+                    if (ptrArr[remainingPtrs] != NULL)
+                    {
+                        free(ptrArr[remainingPtrs]);
+                    }
                 }
             }
         }

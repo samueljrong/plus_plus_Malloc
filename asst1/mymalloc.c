@@ -17,15 +17,15 @@ void initialize()
 // Combine curr's and next metablock's size if both are free.
 void mergeNext(metablock *curr)
 {
-    metablock *next = (void *)curr + sizeof(metablock) + curr->size;
-    if ((void *)next > ((void *)myblock + sizeof(char) * 4095 - sizeof(metablock)))
+    metablock *next = curr + sizeof(metablock) + curr->size;
+    if ((void *)next > ((void *)myblock + (sizeof(char) * 4095) - sizeof(metablock)))
     {
         return;
     }
     if (next->free == 1)
     {
         (curr->size) += ((next->size) + sizeof(metablock));
-        mergeNext(next);
+        mergeNext(curr);
     }
     return;
 }
@@ -34,7 +34,7 @@ void *mymalloc(int memory, int linenum, char *filename)
 {
     if (memory > (4096 - sizeof(metablock)))
     { // Memory too large to fit in array
-        printf("Error on line #%d in file %s\n\t Attempted saturation of dynamic memory - asking for too much memory!.\n", linenum, filename);
+        printf("Error on line #%d in file %s: Attempted saturation of dynamic memory - asking for too much memory!.\n", linenum, filename);
     }
     //i didn't add the case when no enough  space for allocated
     metablock *ptr1;
@@ -52,7 +52,7 @@ void *mymalloc(int memory, int linenum, char *filename)
         // then return error yep
         if ((void *)ptr1 > ((void *)myblock + sizeof(char) * 4095 - sizeof(metablock))) // ptr1 surpassed myblock's memory limit
         {
-            printf("Error on line #%d in file %s\n\t Not enough available memory to malloc\n", linenum, filename);
+            printf("Error on line #%d in file %s: Not enough available memory to malloc\n", linenum, filename);
             return NULL; //failed and return
         }
 
@@ -86,7 +86,7 @@ void *myfree(void *givenBlock, int linenum, char *filename)
     // oh i think we'll just add another conditional comparing curr == givenBlock, and then error
     if ((((metablock *)givenBlock)->size) > (4096 - sizeof(metablock)))
     { // Too big, couldn't have existed
-        printf("Error on line #%d in file %s\n\t Trying to free memory that was not allocated by malloc.\n", linenum, filename);
+        printf("Error on line #%d in file %s: Trying to free memory that was not allocated by malloc.\n", linenum, filename);
         return NULL;
     }
 
@@ -107,14 +107,14 @@ void *myfree(void *givenBlock, int linenum, char *filename)
     }
     if (curr != givenBlock)
     { // checked all of myBlock, but givenBlock not found
-        printf("Error on line #%d in file %s\n\t Trying to free memory that was not allocated by malloc.\n", linenum, filename);
+        printf("Error on line #%d in file %s: Trying to free memory that was not allocated by malloc.\n", linenum, filename);
         return NULL;
     } ///that' great
 
     //so now it should be case found it
     if ((curr->free) == 1)
     { // Error. givenBlock was freed before. Don't free twice.
-        printf("Error on line #%d in file %s\n\t Redundant freeing - pointer was freed before.\n", linenum, filename);
+        printf("Error on line #%d in file %s: Redundant freeing - pointer was freed before.\n", linenum, filename);
         return NULL;
     }
     curr->free = 1;
@@ -125,13 +125,13 @@ void *myfree(void *givenBlock, int linenum, char *filename)
     // do we actually clean it up and delete the metablock. I think. got it
     if (prev->free == 1)
     {
-        (curr->size) += ((prev->size) + sizeof(metablock));
+        (prev->size) += ((curr->size) + sizeof(metablock));
     }
 
     // should we create a merge() function? Like "void merge(void" yep, it may help
     // yeah cause i think it'll just keep finding consecutive free blocks
     // Check if there are free metablocks after curr
-    mergeNext(curr);
+    mergeNext(prev);
 
     //sam, how to u merge two free metablock
     // After freeing the 2nd metablock (so set it's free = 1):
