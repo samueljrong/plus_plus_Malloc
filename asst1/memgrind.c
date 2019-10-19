@@ -16,6 +16,7 @@ int main(int argc, char **argv)
             free(ptr);
         }
     }
+
     // Workload B: malloc() 1 byte, store the pointer in an array - do this 150 times.
     // Once you've malloc()ed 50 byte chunks, then free() the 50 1 byte pointers one by one.
     for (i = 0; i < 100; i++)
@@ -34,6 +35,7 @@ int main(int argc, char **argv)
             }
         }
     }
+
     // Workload C: Randomly choose between a 1 byte malloc() or free()ing a 1 byte pointer
     //      > do this until you have allocated 50 times
     // - Keep track of each operation so that you eventually malloc() 50 bytes, in total
@@ -70,23 +72,54 @@ int main(int argc, char **argv)
         }
     }
 
-    // Workload D
+    // Workload D: Randomly choose between a randomly-sized malloc() or free()ing a pointer – do this many times (see below)
+    // Keep track of each malloc so that all mallocs do not exceed your total memory capacity
+    // Keep track of each operation so that you eventually malloc() 50 times
+    // Keep track of each operation so that you eventually free() all pointers
+    // Choose a random allocation size between 1 and 64 bytes
     for (i = 0; i < 100; i++)
     {
-
+        int counter = 0;             // Total amount of times malloc() has been called.
+        int remainingPtrs = counter; // Total number of malloc()ed pointers remaining.
+        void *ptrArr[50];
+        while (counter < 50) // Loop until malloc() called 50 times total.
+        {
+            if ((rand() % 2) == 0) // Malloc between 1 and 64 bytes
+            {
+                int randSize = (rand() % 64 + 1);
+                void *ptr = (void *)malloc(randSize);
+                if (ptr != NULL)
+                { // If NULL, malloc failed, possibly due to exceeding total memory capacity.
+                    ptrArr[remainingPtrs];
+                    counter++;
+                    remainingPtrs++;
+                }
+            }
+            else // Free a pointer
+            {
+                if (remainingPtrs > 0) // Only free if a pointer exists
+                {
+                    remainingPtrs--;
+                    free(ptrArr[remainingPtrs]);
+                }
+            }
+        }
+        while (remainingPtrs > 0)
+        { // Free rest of memory.
+            remainingPtrs--;
+            free(ptrArr[remainingPtrs]);
+        }
     }
-    
+
     // Workload E
     for (i = 0; i < 100; i++)
     {
-        
     }
 
     // Workload F
     for (i = 0; i < 100; i++)
     {
-        
     }
-    
+
     return 0;
 }
