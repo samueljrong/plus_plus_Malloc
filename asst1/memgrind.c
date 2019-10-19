@@ -1,22 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 // Memgrind: a series of workloads to test our mymalloc and myfree implementations.
 // Each workload will be run 100 times, one after the other.
 
+// NEED TO RECORD RUNTIME OF EACH WORKLOAD AND CREATE MEANs
+
 int main(int argc, char **argv)
 {
+    struct timeval startTime; 
+    struct timeval endTime;
+    
     // Workload A: malloc() 1 byte and immediately free it - do this 150 times
+    
+    long runtimeA = 0L;
     int i, j, k;
     for (i = 0; i < 100; i++)
     {
+        gettimeofday(&startTime, NULL);
         for (j = 0; j < 150; j++)
         {
             void *ptr = (void *)malloc(1);
             free(ptr);
         }
+        gettimeofday(&endTime, NULL);
+        runtimeA += ((endTime.tv_sec-startTime.tv_sec)*1000000L + endTime.tv_usec-startTime.tv_usec);
     }
-
+    runtimeA = (runtimeA / 100); // Calculate mean runtime of workload A
+    
     // Workload B: malloc() 1 byte, store the pointer in an array - do this 150 times.
     // Once you've malloc()ed 50 byte chunks, then free() the 50 1 byte pointers one by one.
     for (i = 0; i < 100; i++)
@@ -35,6 +47,7 @@ int main(int argc, char **argv)
             }
         }
     }
+
 
     // Workload C: Randomly choose between a 1 byte malloc() or free()ing a 1 byte pointer
     //      > do this until you have allocated 50 times
@@ -71,7 +84,10 @@ int main(int argc, char **argv)
             free(ptrArr[remainingPtrs]);
         }
     }
+    
 
+    // ERROR, might be going out of array in this workload
+    
     // Workload D: Randomly choose between a randomly-sized malloc() or free()ing a pointer – do this many times (see below)
     // Keep track of each malloc so that all mallocs do not exceed your total memory capacity
     // Keep track of each operation so that you eventually malloc() 50 times
