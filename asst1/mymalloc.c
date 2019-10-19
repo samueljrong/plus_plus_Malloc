@@ -17,15 +17,15 @@ void initialize()
 // Combine curr's and next metablock's size if both are free.
 void mergeNext(metablock *curr)
 {
-    metablock *next = (void *)curr + sizeof(metablock) + curr->size;
-    if ((void *)next > ((void *)myblock + sizeof(char) * 4095 - sizeof(metablock)))
+    metablock *next = curr + sizeof(metablock) + curr->size;
+    if ((void *)next > ((void *)myblock + (sizeof(char) * 4095) - sizeof(metablock)))
     {
         return;
     }
     if (next->free == 1)
     {
         (curr->size) += ((next->size) + sizeof(metablock));
-        mergeNext(next);
+        mergeNext(curr);
     }
     return;
 }
@@ -125,13 +125,13 @@ void *myfree(void *givenBlock, int linenum, char *filename)
     // do we actually clean it up and delete the metablock. I think. got it
     if (prev->free == 1)
     {
-        (curr->size) += ((prev->size) + sizeof(metablock));
+        (prev->size) += ((curr->size) + sizeof(metablock));
     }
 
     // should we create a merge() function? Like "void merge(void" yep, it may help
     // yeah cause i think it'll just keep finding consecutive free blocks
     // Check if there are free metablocks after curr
-    mergeNext(curr);
+    mergeNext(prev);
 
     //sam, how to u merge two free metablock
     // After freeing the 2nd metablock (so set it's free = 1):

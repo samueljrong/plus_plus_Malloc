@@ -87,7 +87,7 @@ int main(int argc, char **argv)
     
 
     // ERROR, might be going out of array in this workload
-    
+
     // Workload D: Randomly choose between a randomly-sized malloc() or free()ing a pointer – do this many times (see below)
     // Keep track of each malloc so that all mallocs do not exceed your total memory capacity
     // Keep track of each operation so that you eventually malloc() 50 times
@@ -103,18 +103,21 @@ int main(int argc, char **argv)
             if ((rand() % 2) == 0) // Malloc between 1 and 64 bytes
             {
                 int randSize = (rand() % 64 + 1);
+                
                 void *ptr = (void *)malloc(randSize);
                 if (ptr != NULL)
                 { // If NULL, malloc failed, possibly due to exceeding total memory capacity.
                     ptrArr[remainingPtrs];
                     counter++;
                     remainingPtrs++;
+                    printf("Malloc counter %d\n",counter);
                 }
             }
             else // Free a pointer
             {
                 if (remainingPtrs > 0) // Only free if a pointer exists
                 {
+                    printf("Freeing %d\n", remainingPtrs);
                     remainingPtrs--;
                     free(ptrArr[remainingPtrs]);
                 }
