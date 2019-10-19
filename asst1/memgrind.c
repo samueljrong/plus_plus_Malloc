@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     //      > don't allow a free() if you have no pointers to free()
     for (i = 0; i < 100; i++)
     {
-        int counter = 0; // Total amount of times malloc() has been called.
+        int counter = 0;             // Total amount of times malloc() has been called.
         int remainingPtrs = counter; // Total number of malloc()ed pointers remaining.
         void *ptrArr[50];
         while (counter < 50) // Loop until malloc() called 50 times total.
@@ -63,16 +63,30 @@ int main(int argc, char **argv)
                 }
             }
         }
-        while (remainingPtrs > 0) { // Free rest of memory.
+        while (remainingPtrs > 0)
+        { // Free rest of memory.
             remainingPtrs--;
             free(ptrArr[remainingPtrs]);
         }
     }
 
     // Workload D
+    for (i = 0; i < 100; i++)
+    {
 
+    }
+    
     // Workload E
+    for (i = 0; i < 100; i++)
+    {
+        
+    }
 
     // Workload F
+    for (i = 0; i < 100; i++)
+    {
+        
+    }
+    
     return 0;
 }
