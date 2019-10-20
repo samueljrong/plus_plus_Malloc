@@ -5,8 +5,6 @@
 // Memgrind: a series of workloads to test our mymalloc and myfree implementations.
 // Each workload will be run 100 times, one after the other.
 
-// NEED TO RECORD RUNTIME OF EACH WORKLOAD AND CREATE MEANs
-
 int main(int argc, char **argv)
 {
     struct timeval startTime;
@@ -21,7 +19,10 @@ int main(int argc, char **argv)
         for (j = 0; j < 150; j++)
         {
             void *ptr = (void *)malloc(1);
-            free(ptr);
+            if (ptr != NULL)
+            {
+                free(ptr);
+            }
         }
         gettimeofday(&endTime, NULL);
         runtimeA += ((endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) / 1000000.0);
@@ -40,11 +41,15 @@ int main(int argc, char **argv)
             for (k = 0; k < 50; k++)
             {
                 void *ptr = (void *)malloc(1);
-                ptrArr[k] = ptr;
+                if (ptr != NULL) {
+                    ptrArr[k] = ptr;
+                }
             }
             for (k = 0; k < 50; k++)
             {
-                free(ptrArr[k]);
+                if (ptrArr[k] != NULL) {
+                    free(ptrArr[k]);
+                }
             }
         }
         gettimeofday(&endTime, NULL);
@@ -96,7 +101,9 @@ int main(int argc, char **argv)
         while (remainingPtrs > 0)
         { // Free rest of memory.
             remainingPtrs--;
-            free(ptrArr[remainingPtrs]);
+            if (ptrArr[remainingPtrs] != NULL) {
+                free(ptrArr[remainingPtrs]);
+            }
         }
         gettimeofday(&endTime, NULL);
         runtimeC += ((endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) / 1000000.0);
@@ -176,13 +183,12 @@ int main(int argc, char **argv)
     }
     runtimeF = (runtimeF / 100); // Mean runtime of 100 workloads
 
-    printf("Runtime of workload A: %0.6f\n", runtimeA);
-    printf("Runtime of workload B: %0.6f\n", runtimeB);
-    printf("Runtime of workload C: %0.6f\n", runtimeC);
-    printf("Runtime of workload D: %0.6f\n", runtimeD);
-    printf("Runtime of workload E: %0.6f\n", runtimeE);
-    printf("Runtime of workload F: %0.6f\n", runtimeF);
+    printf("Mean runtime for workload A: %0.6f seconds\n", runtimeA);
+    printf("Mean runtime for workload B: %0.6f seconds\n", runtimeB);
+    printf("Mean runtime for workload C: %0.6f seconds\n", runtimeC);
+    printf("Mean runtime for workload D: %0.6f seconds\n", runtimeD);
+    printf("Mean runtime for workload E: %0.6f seconds\n", runtimeE);
+    printf("Mean runtime for workload F: %0.6f seconds\n", runtimeF);
 
     return 0;
-    // printf("%0.6f\n", runtimeA); // Runtime in microseconds
 }
