@@ -1,0 +1,6 @@
+Since for pervious workload, we only free pointers at the end of the allocate memory, which not good for test the merging of metablocks
+So i used workload E to try freeing pointers with different order. And we can also compare the runtimes with workload A. 
+
+Workload E
+malloc(1) bytes store the pointer in array - do this 150 times.
+then, freeing the pointer in the even index in the pointer array one by one. And then freeing the pointer in the odd index in the pointer array. 
