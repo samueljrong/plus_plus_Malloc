@@ -63,10 +63,13 @@ int main(int argc, char **argv)
         {
             if ((rand() % 2) == 0) // Malloc 1 byte
             {
-                void *ptr = (void *)malloc(1);
-                ptrArr[remainingPtrs];
-                counter++;
-                remainingPtrs++;
+                void *ptr = malloc(1);
+                if (ptr != NULL)
+                {
+                    ptrArr[remainingPtrs] = ptr;
+                    counter++;
+                    remainingPtrs++;
+                }
             }
             else
             {
@@ -76,6 +79,10 @@ int main(int argc, char **argv)
                     if (ptrArr[remainingPtrs] != NULL)
                     {
                         free(ptrArr[remainingPtrs]);
+                    }
+                    else
+                    {
+                        remainingPtrs++;
                     }
                 }
             }
@@ -110,21 +117,23 @@ int main(int argc, char **argv)
                 void *ptr = malloc(randSize);
                 if (ptr != NULL)
                 { // If NULL, malloc failed, possibly due to exceeding total memory capacity.
-                    ptrArr[remainingPtrs];
+                    ptrArr[remainingPtrs] = ptr;
                     counter++;
                     remainingPtrs++;
-                    printf("Malloc counter %d\n", counter);
                 }
             }
             else // Free a pointer
             {
-                if (remainingPtrs > 0) // Only free if a pointer exists
+                if (remainingPtrs > 0 && remainingPtrs < 51) // Only free if a pointer exists
                 {
-                    printf("Freeing %d\n", remainingPtrs);
                     remainingPtrs--;
                     if (ptrArr[remainingPtrs] != NULL)
                     {
                         free(ptrArr[remainingPtrs]);
+                    }
+                    else
+                    {
+                        remainingPtrs++;
                     }
                 }
             }
@@ -132,10 +141,15 @@ int main(int argc, char **argv)
         while (remainingPtrs > 0)
         { // Free rest of memory.
             remainingPtrs--;
-            free(ptrArr[remainingPtrs]);
+            if (ptrArr[remainingPtrs] != NULL) {
+                free(ptrArr[remainingPtrs]);
+            } else {
+                remainingPtrs++;
+            }
+            
         }
     }
-
+    
     // Workload E
     for (i = 0; i < 100; i++)
     {
