@@ -13,8 +13,7 @@ int main(int argc, char **argv)
     struct timeval endTime;
 
     // Workload A: malloc() 1 byte and immediately free it - do this 150 times
-
-    long runtimeA = 0L;
+    double runtimeA = 0.0;
     int i, j, k;
     for (i = 0; i < 100; i++)
     {
@@ -25,14 +24,16 @@ int main(int argc, char **argv)
             free(ptr);
         }
         gettimeofday(&endTime, NULL);
-        runtimeA += ((endTime.tv_sec - startTime.tv_sec) * 1000000L + endTime.tv_usec - startTime.tv_usec);
+        runtimeA += ((endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) / 1000000.0);
     }
     runtimeA = (runtimeA / 100); // Calculate mean runtime of workload A
 
     // Workload B: malloc() 1 byte, store the pointer in an array - do this 150 times.
     // Once you've malloc()ed 50 byte chunks, then free() the 50 1 byte pointers one by one.
+    double runtimeB = 0.0;
     for (i = 0; i < 100; i++)
     {
+        gettimeofday(&startTime, NULL);
         void *ptrArr[50];
         for (j = 0; j < 3; j++)
         {
@@ -46,7 +47,10 @@ int main(int argc, char **argv)
                 free(ptrArr[k]);
             }
         }
+        gettimeofday(&endTime, NULL);
+        runtimeB += ((endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) / 1000000.0);
     }
+    runtimeB = (runtimeB / 100);
 
     // Workload C: Randomly choose between a 1 byte malloc() or free()ing a 1 byte pointer
     //      > do this until you have allocated 50 times
@@ -54,8 +58,10 @@ int main(int argc, char **argv)
     //      > if you have already allocated 50 times, disregard the random and just free() on each iteration
     // - Keep track of each operation so that you eventually free() all pointers
     //      > don't allow a free() if you have no pointers to free()
+    double runtimeC = 0.0;
     for (i = 0; i < 100; i++)
     {
+        gettimeofday(&startTime, NULL);
         int counter = 0;             // Total amount of times malloc() has been called.
         int remainingPtrs = counter; // Total number of malloc()ed pointers remaining.
         void *ptrArr[50];
@@ -92,19 +98,20 @@ int main(int argc, char **argv)
             remainingPtrs--;
             free(ptrArr[remainingPtrs]);
         }
+        gettimeofday(&endTime, NULL);
+        runtimeC += ((endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) / 1000000.0);
     }
-
-    // ERROR, might be going out of array in this workload. Issue with myfree() or this workload?
-    // double free or corruption (fasttop)
-    // Aborted (core dumped)
+    runtimeC = (runtimeC / 100);
 
     // Workload D: Randomly choose between a randomly-sized malloc() or free()ing a pointer – do this many times (see below)
     // Keep track of each malloc so that all mallocs do not exceed your total memory capacity
     // Keep track of each operation so that you eventually malloc() 50 times
     // Keep track of each operation so that you eventually free() all pointers
     // Choose a random allocation size between 1 and 64 bytes
+    double runtimeD = 0.0;
     for (i = 0; i < 100; i++)
     {
+        gettimeofday(&startTime, NULL);
         int counter = 0;             // Total amount of times malloc() has been called.
         int remainingPtrs = counter; // Total number of malloc()ed pointers remaining.
         void *ptrArr[50];
@@ -141,24 +148,41 @@ int main(int argc, char **argv)
         while (remainingPtrs > 0)
         { // Free rest of memory.
             remainingPtrs--;
-            if (ptrArr[remainingPtrs] != NULL) {
+            if (ptrArr[remainingPtrs] != NULL)
+            {
                 free(ptrArr[remainingPtrs]);
-            } else {
+            }
+            else
+            {
                 remainingPtrs++;
             }
-            
         }
+        gettimeofday(&endTime, NULL);
+        runtimeD += ((endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) / 1000000.0); // Add runtime of current workload to total runtime
     }
-    
+    runtimeD = (runtimeD / 100); // Mean runtime of 100 workloads
+
     // Workload E
+    double runtimeE = 0.0;
     for (i = 0; i < 100; i++)
     {
     }
+    runtimeE = (runtimeE / 100); // Mean runtime of 100 workloads
 
     // Workload F
+    double runtimeF = 0.0;
     for (i = 0; i < 100; i++)
     {
     }
+    runtimeF = (runtimeF / 100); // Mean runtime of 100 workloads
+
+    printf("Runtime of workload A: %0.6f\n", runtimeA);
+    printf("Runtime of workload B: %0.6f\n", runtimeB);
+    printf("Runtime of workload C: %0.6f\n", runtimeC);
+    printf("Runtime of workload D: %0.6f\n", runtimeD);
+    printf("Runtime of workload E: %0.6f\n", runtimeE);
+    printf("Runtime of workload F: %0.6f\n", runtimeF);
 
     return 0;
+    // printf("%0.6f\n", runtimeA); // Runtime in microseconds
 }
