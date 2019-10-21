@@ -181,14 +181,75 @@ double workloadD(double *runtime, struct timeval startTime, struct timeval endTi
     return *runtime;
 }
 
-// Workload E: INCOMPLETE
+// Workload E:
+//malloc(1) bytes store the pointer in array - do this 150 times.
+//then, freeing the pointer in the even index in the pointer array one by one. And then freeing the pointer in the odd index in the pointer array.
 double workloadE(double *runtime, struct timeval startTime, struct timeval endTime)
 {
+    int i;
+    gettimeofday(&startTime, NULL);
+    void *ptrArr[150];
+    for (i = 0; i < 150; i++)
+    {
+        void *ptr = (void *)malloc(1);
+        if (ptr != NULL)
+        {
+            ptrArr[i] = ptr;
+        }
+    }
+    for (i =0; i<150; i=i+2)
+    {
+        if (ptrArr[i] != NULL)
+        {
+            free(ptrArr[i]);
+        }
+    }
+    for(i = 1; i<150; i=i+2){
+        if (ptrArr[i] != NULL)
+        {
+            free(ptrArr[i]);
+        }
+    }
+    gettimeofday(&endTime, NULL);
+    calculateRuntime(runtime, startTime, endTime);
+    return *runtime;
 }
 
-// Workload F: INCOMPLETE
+// Workload F:
+
+//do 3 interation
+//first time malloc(1) bytes for 50 times, and then free some of pointers
+//second time malloc (2) bytes for 50 times, and free some of pointers
+//third time malloc (3) bytes for 50 times, and free some of pointers
 double workloadF(double *runtime, struct timeval startTime, struct timeval endTime)
 {
+    int i , j;
+    int counter = 0;
+    gettimeofday(&startTime, NULL);
+    void *ptrArr[150];
+    // create 20 metablock pointers used to test merge
+    for (j = 0; j < 3; j++)
+    {
+        for (i = 0; i < 50; i++)
+        {
+            void *ptr = (void *)malloc(1+j);
+            if (ptr != NULL)
+            {
+                ptrArr[i+j*50] = ptr;
+            }
+        }
+        for (i = 0; i < 50; i++)
+        {
+            if(i%4 != 0 && ptrArr[i+j*50] != NULL)
+            {
+                free(ptrArr[i+j*50]);
+            }
+        }
+    }
+    
+    gettimeofday(&endTime, NULL);
+    calculateRuntime(runtime, startTime, endTime);
+    return *runtime;
 }
 
 int main(int argc, char **argv)
