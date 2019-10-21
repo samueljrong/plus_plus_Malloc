@@ -4,3 +4,12 @@ So i used workload E to try freeing pointers with different order. And we can al
 Workload E
 malloc(1) bytes store the pointer in array - do this 150 times.
 then, freeing the pointer in the even index in the pointer array one by one. And then freeing the pointer in the odd index in the pointer array. 
+
+
+Above we test about freeing ptr and merge the free metablock into 1. So now we are going to check if we can allocated memory into to those freed metablock 
+
+Workload F 
+do 3 interation 
+first time malloc(1) bytes for 50 times, and then free some of pointers
+second time malloc (2) bytes for 50 times, and free some of pointers
+third time malloc (3) bytes for 50 times, and free some of pointers
