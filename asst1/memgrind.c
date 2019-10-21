@@ -45,7 +45,7 @@ double workloadB(double *runtime, struct timeval startTime, struct timeval endTi
     int j, k;
     gettimeofday(&startTime, NULL);
     void *ptrArr[50];
-    for (j = 0; j < 3; j++)
+    for (j = 0; j < 3; j++) // 3 iterations for a total of 150 mallocs
     {
         for (k = 0; k < 50; k++)
         {
@@ -228,27 +228,36 @@ double workloadF(double *runtime, struct timeval startTime, struct timeval endTi
     gettimeofday(&startTime, NULL);
     void *ptrArr[150];
     // create 20 metablock pointers used to test merge
-    for (j = 0; j < 3; j++)
+    for (i = 0; i < 3; i++) // Each iteration represents malloc(1), then malloc(2), then malloc(3)
     {
-        for (i = 0; i < 50; i++)
+        for (j = 0; j < 50; j++) // Repeat 50 times for malloc(i+1)
         {
-            void *ptr = (void *)malloc(1+j);
+            void *ptr = (void *)malloc(i+1); 
             if (ptr != NULL)
             {
-                ptrArr[i+j*50] = ptr;
+                ptrArr[i*50+j] = ptr;
             }
         }
-        for (i = 0; i < 50; i++)
+        for (j = 0; j < 50; j++)
         {
-            if(i%4 != 0 && ptrArr[i+j*50] != NULL)
+            if(j%4 != 0 && ptrArr[i*50+j] != NULL)
             {
-                free(ptrArr[i+j*50]);
+                free(ptrArr[i*50+j]);
             }
         }
     }
-    
     gettimeofday(&endTime, NULL);
     calculateRuntime(runtime, startTime, endTime);
+    for (i = 0; i < 3; i++) { // Free all remaining malloc() pointers
+        for (j = 0; j < 50; j++)
+        {
+            if(j%4 == 0 && ptrArr[i*50+j] != NULL)
+            {
+                free(ptrArr[i*50+j]);
+            }
+        }
+    
+    }
     return *runtime;
 }
 
