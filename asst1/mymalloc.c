@@ -114,6 +114,7 @@ void *myfree(void *givenBlock, int linenum, char *filename)
     }
     else
     {
+        mergeNext(curr);
         return curr;
     }
 }
